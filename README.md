@@ -9,7 +9,7 @@
 
 # Реализация
 ```mermaid
-flowchart LR
+flowchart TB
   antenna["Антенна"]
   switch["Переключатель"]
   voltahe_source["DC-DC 5V"]
@@ -19,26 +19,45 @@ flowchart LR
   amplifier["Усилитель"]
   micro["Микрофон"]
   speaker["Динамик"]
-  subgraph Аудио
-    micro
-    amplifier
-    speaker
-  end
-  subgraph Радио
+  mixer_up["Повышающий смеситель"]
+  mixer_down["Понижающий смеситель"]
+  threshold_rx["Пороговое устройство"]
+  threshold_tx["Пороговое устройство"]
+
+  subgraph Приемник
     receiver
-    transmitter
-    switch
-    antenna
+    mixer_down
+    threshold_rx
   end
+
+  subgraph Передатчик
+    transmitter
+    mixer_up
+    threshold_tx
+  end
+
   micro --> amplifier
-  amplifier --> arduino
+  amplifier --> threshold_tx
+  amplifier --> mixer_up
+  mixer_up --> transmitter
+  threshold_tx --> arduino
   arduino --> transmitter
-  receiver --> arduino
-  arduino --> speaker 
   transmitter --> switch
-  switch --> receiver
   switch --> antenna
+
   antenna --> switch
+  switch --> receiver
+  receiver --> mixer_down
+  mixer_down --> threshold_rx
+  threshold_rx --> arduino
+  arduino --> speaker
+  threshold_rx --> speaker
+  
+  
+  
+  
+  
+
 ```
 
 # Компоненты
